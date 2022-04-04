@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "name":"film 1",
+        "desc": "test film1",
+        "acteurs": "Json Stateman",
+        "nbIn": "60"
+    },
+    {
+        "id": 2,
+        "name":"film 2",
+        "desc": "test film2",
+        "acteurs": "Pad Inspie",
+        "nbIn": "3"
+    }
+]

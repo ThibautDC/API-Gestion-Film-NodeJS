@@ -1,7 +1,7 @@
 # TP NODE PROJET C
 ## Comment lancer le projet
 -	Faire `npm i` dans le terminal
--	Puis `npm start` dans le terminal
+-	Puis `node .` dans le terminal
 
 ##	Description du projet
 
