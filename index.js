@@ -1,6 +1,5 @@
 const fastify = require('fastify');
 const app = fastify();
-const films = require('./films.json')
 const mongoose = require('mongoose');
 const { ReactionCollector } = require('discord.js');
 
@@ -9,7 +8,7 @@ mongoose.connect('mongodb+srv://Thibaut:Thibaut1@cluster0.rji1t.mongodb.net/tpno
 
 
 const filmSchema = {
-    id:{},
+    id:{type:Number,required:true},
     name: { type: String, required: true },
     desc: {type:String, required:true},
     acteurs:{ type:String, required:true},
@@ -18,62 +17,60 @@ const filmSchema = {
 
 const Film = mongoose.model('Film', filmSchema);
 
+
 //Recupére tout les films
 app.get('/film', async (req,res) => {
     let films = await Film.find({});
-    res.status(200).json(films)
+    res.status(200).send(films)
 })
 
-//Recupére le film avec l'id choisis
-app.get('/film/:id', async (req,res) => {
-//Chercher par name ou _id
-    let films = await Film.findById(req.params.id)
-    res.status(200).json(films)
-
-})
-
-//Ajoute un film
-app.post('/film', (req,res) => {
-    films.push(req.body)
-    res.status(200).json(films)
-})
-
-//Modification du film choisis et ne met a jour que les champs necessaire
-app.patch('/film/:id', (req,res) => {
-    const id = parseInt(req.params.id)
-    const film = films.find(film => film.id === id)
-    film.name =req.body.name,
-    film.desc =req.body.desc,
-    film.acteurs =req.body.acteurs,
-    film.nbIn =req.body.nbIn,
-    res.status(200).json(film)
-})
-
-//Supprime le film choisis
-app.delete('/film/:name', async (req,res) => {
-    // const id = parseInt(req.params.id)
-    // const film = films.find(film => film.id === id)
-    // films.splice(films.indexOf(film),1)
+//Recupére le film avec le nom
+app.get('/film/:name', async (req,res) => {
     let films = await Film.find({})
-    
     let filmName = films.filter(f=>f.name==req.params.name)
+
     if (filmName.length){
-        await Film.findByIdAndDelete(filmName[0]._id)
-        res.status(200).json(films)
+        await Film.findById(filmName[0]._id)
+        res.status(200).send(filmName)
     }else{
         res.send("Le film n'existe pas")
     }
 })
 
+//Ajoute un film
+app.post('/film', async (req,res) => {
+    let film = req.body;
+    let films = await Film.create(film);
+    res.status(200).send(films)
+})
 
-//Modif nombre d'entrées
-// app.patch('/films/nbin/:id'),(req,res)=>{
-//     const id = parseInt(req.params.id)
-//     const film = films.find(film => film.id === id)
-//     film.nbIn =req.body.nbIn,
-//     res.status(200).json(film)
-// }
+//Modification du film choisis et ne met a jour que les champs necessaire
+app.put('/film/:name', async (req,res) => {
+    let films = await Film.find({})
+    let filmName = films.filter(f=>f.name==req.params.name)
+    let update = req.body;
 
+    if (filmName.length){
+        await Film.findByIdAndUpdate(films, update)
+        let filmToUpdate = await Film.findById(filmName[0]._id)
+        res.status(200).send(filmToUpdate)
+    }else{
+        res.send("Le film n'existe pas")
+    }
+})
+
+//Supprime le film choisis via le nom
+app.delete('/film/:name', async (req,res) => {
+    let films = await Film.find({})
+    
+    let filmName = films.filter(f=>f.name==req.params.name)
+    if (filmName.length){
+        await Film.findByIdAndDelete(filmName[0]._id)
+        res.status(200).send(films)
+    }else{
+        res.send("Le film n'existe pas")
+    }
+})
 
 app.listen(3000, () => {
     console.log("Server running")
