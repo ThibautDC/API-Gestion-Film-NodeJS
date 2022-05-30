@@ -14,7 +14,7 @@ const routes=[
     {
         method: 'GET',
         url: '/getAFilm/:id',
-        handler:controllers.getAFilm
+        handler:controllers.getFilm
     },
     {
         method: 'DELETE',
